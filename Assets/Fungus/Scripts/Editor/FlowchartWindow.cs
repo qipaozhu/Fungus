@@ -226,15 +226,15 @@ namespace Fungus.EditorUtils
         private bool wasControl;
         private ExecutingBlocks executingBlocks = new ExecutingBlocks();
 
-        private GUIStyle toolbarSeachTextFieldStyle;
+        private GUIStyle toolbarSearchTextFieldStyle;
         protected GUIStyle ToolbarSeachTextFieldStyle
         {
             get
             {
-                if(toolbarSeachTextFieldStyle == null)
-                    toolbarSeachTextFieldStyle = GUI.skin.FindStyle("ToolbarSeachTextField");
+                if(toolbarSearchTextFieldStyle == null)
+                    toolbarSearchTextFieldStyle = GUI.skin.FindStyle("ToolbarSeachTextField");
 
-                return toolbarSeachTextFieldStyle;
+                return toolbarSearchTextFieldStyle;
             }
         }
         private GUIStyle toolbarSeachCancelButtonStyle;

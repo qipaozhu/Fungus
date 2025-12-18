@@ -15,7 +15,7 @@ namespace Fungus
     /// <summary>
     /// Multi-language localization support.
     /// </summary>
-    public class Localization : MonoBehaviour, ISubstitutionHandler
+    public class Localization : MonoBehaviour
     {
         /// <summary>
         /// Temp storage for a single item of standard text and its localizations.
@@ -66,7 +66,6 @@ namespace Fungus
 
         protected virtual void OnEnable()
         {
-            StringSubstituter.RegisterHandler(this);
             #if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
             #endif
@@ -74,7 +73,6 @@ namespace Fungus
 
         protected virtual void OnDisable()
         {
-            StringSubstituter.UnregisterHandler(this);
             #if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
             #endif

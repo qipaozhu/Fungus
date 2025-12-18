@@ -16,7 +16,7 @@ namespace Fungus
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler
+    public class Flowchart : MonoBehaviour
     {
         public const string SubstituteVariableRegexString = "{\\$.*?}";
 
@@ -76,18 +76,12 @@ namespace Fungus
         [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict the set of commands available when editing a Flowchart.")]
         [SerializeField] protected List<string> hideCommands = new List<string>();
 
-        [Tooltip("Lua Environment to be used by default for all Execute Lua commands in this Flowchart")]
-        [SerializeField] protected LuaEnvironment luaEnvironment;
-
         [Tooltip("The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.")]
         [SerializeField] protected string luaBindingName = "flowchart";
 
         protected static List<Flowchart> cachedFlowcharts = new List<Flowchart>();
 
         protected static bool eventSystemPresent;
-
-        protected StringSubstituter stringSubstituer;
-
 #if UNITY_EDITOR
         public bool SelectedCommandsStale { get; set; }
 #endif
@@ -154,8 +148,6 @@ namespace Fungus
             CheckItemIds();
             CleanupComponents();
             UpdateVersion();
-
-            StringSubstituter.RegisterHandler(this);   
         }
 
         protected virtual void OnDisable()
@@ -165,8 +157,6 @@ namespace Fungus
             #if UNITY_5_4_OR_NEWER
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneManager_activeSceneChanged;
             #endif
-
-            StringSubstituter.UnregisterHandler(this);   
         }
 
         protected virtual void UpdateVersion()
@@ -407,16 +397,6 @@ namespace Fungus
         /// Display line numbers in the command list in the Block inspector.
         /// </summary>
         public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
-
-        /// <summary>
-        /// Lua Environment to be used by default for all Execute Lua commands in this Flowchart.
-        /// </summary>
-        public virtual LuaEnvironment LuaEnv { get { return luaEnvironment; } }
-
-        /// <summary>
-        /// The ExecuteLua command adds a global Lua variable with this name bound to the flowchart prior to executing.
-        /// </summary>
-        public virtual string LuaBindingName { get { return luaBindingName; } }
 
         /// <summary>
         /// Position in the center of all blocks in the flowchart.
@@ -1218,7 +1198,7 @@ namespace Fungus
         /// <summary>
         /// Reset the commands and variables in the Flowchart.
         /// </summary>
-        public virtual void Reset(bool resetCommands, bool resetVariables)
+        public virtual void ResetFlowchart(bool resetCommands, bool resetVariables)
         {
             if (resetCommands)
             {
@@ -1302,13 +1282,9 @@ namespace Fungus
         /// </summary>
         public virtual string SubstituteVariables(string input)
         {
-            if (stringSubstituer == null)
-            {
-                stringSubstituer = new StringSubstituter();
-            }
 
             // Use the string builder from StringSubstituter for efficiency.
-            StringBuilder sb = stringSubstituer._StringBuilder;
+            StringBuilder sb = new StringBuilder();
             sb.Length = 0;
             sb.Append(input);
 
@@ -1339,7 +1315,7 @@ namespace Fungus
             }
 
             // Now do all other substitutions in the scene
-            changed |= stringSubstituer.SubstituteStrings(sb);
+            //changed |= stringSubstituer.SubstituteStrings(sb);
 
             if (changed)
             {
@@ -1371,46 +1347,7 @@ namespace Fungus
         #endregion
 
         #region IStringSubstituter implementation
-
-        /// <summary>
-        /// Implementation of StringSubstituter.ISubstitutionHandler which matches any public variable in the Flowchart.
-        /// To perform full variable substitution with all substitution handlers in the scene, you should
-        /// use the SubstituteVariables() method instead.
-        /// </summary>
-        [MoonSharp.Interpreter.MoonSharpHidden]
-        public virtual bool SubstituteStrings(StringBuilder input)
-        {
-            // Instantiate the regular expression object.
-            Regex r = new Regex(SubstituteVariableRegexString);
-
-            bool modified = false;
-
-            // Match the regular expression pattern against a text string.
-            var results = r.Matches(input.ToString());
-            for (int i = 0; i < results.Count; i++)
-            {
-                Match match = results[i];
-                string key = match.Value.Substring(2, match.Value.Length - 3);
-                // Look for any matching public variables in this Flowchart
-                for (int j = 0; j < variables.Count; j++)
-                {
-                    var variable = variables[j];
-                    if (variable == null)
-                    {
-                        continue;
-                    }
-                    if (variable.Scope == VariableScope.Public && variable.Key == key)
-                    {
-                        string value = variable.ToString();
-                        input.Replace(match.Value, value);
-                        modified = true;
-                    }
-                }
-            }
-
-            return modified;
-        }
-
+        //Not support
         #endregion
     }
 }

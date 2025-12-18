@@ -90,8 +90,6 @@ namespace Fungus
         // Most recent speaking character
         protected static Character speakingCharacter;
 
-        protected StringSubstituter stringSubstituter = new StringSubstituter();
-
 		// Cache active Say Dialogs to avoid expensive scene search
 		protected static List<SayDialog> activeSayDialogs = new List<SayDialog>();
 
@@ -445,7 +443,7 @@ namespace Fungus
         {
             if (NameText != null)
             {
-                var subbedName = stringSubstituter.SubstituteStrings(name);
+                var subbedName = name;
                 NameText = subbedName;
                 nameTextAdapter.SetTextColor(color);
             }
